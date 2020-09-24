@@ -19,21 +19,27 @@ type ConfigFileList struct {
 
 // Config struct
 type Config struct {
-	Port            int           `json:"port"`
-	Host            string        `json:"host"`
-	User            string        `json:"user"`
-	Password        string        `json:"password"`
-	CID             string        `json:"cid"`
-	Meta            bool          `json:"meta"`
-	EOS             bool          `json:"eos"`
-	GRPC            GRPCConfig    `json:"grpc"`
-	TLS             TLSConfig     `json:"tls"`
-	Influx          InfluxConfig  `json:"influx"`
-	Paths           []PathsConfig `json:"paths"`
-	Log             LogConfig     `json:"log"`
-	Vendor          VendorConfig  `json:"vendor"`
-	Alias           string        `json:"alias"`
-	PasswordDecoder string        `json:"password-decoder"`
+	Port            int              `json:"port"`
+	Host            string           `json:"host"`
+	User            string           `json:"user"`
+	Password        string           `json:"password"`
+	CID             string           `json:"cid"`
+	Meta            bool             `json:"meta"`
+	EOS             bool             `json:"eos"`
+	GRPC            GRPCConfig       `json:"grpc"`
+	TLS             TLSConfig        `json:"tls"`
+	Influx          InfluxConfig     `json:"influx"`
+	Paths           []PathsConfig    `json:"paths"`
+	Log             LogConfig        `json:"log"`
+	Vendor          VendorConfig     `json:"vendor"`
+	Alias           string           `json:"alias"`
+	PasswordDecoder string           `json:"password-decoder"`
+	Prometheus      PrometheusConfig `json:"prometheus"`
+}
+
+// PrometheusConfig definition
+type PrometheusConfig struct {
+	SensorStringAsLabel []string `json:"string-as-label"`
 }
 
 // VendorConfig definition
@@ -259,7 +265,9 @@ func (jctx *JCtx) isConfigChanged(new Config) bool {
 	if !reflect.DeepEqual(old.Influx, new.Influx) {
 		return true
 	}
-
+	if !reflect.DeepEqual(old.Prometheus, new.Prometheus) {
+		return true
+	}
 	return false
 }
 

@@ -153,6 +153,11 @@ func addPrometheus(ocData *na_pb.OpenConfigData, jctx *JCtx) {
 		case *na_pb.KeyValue_StrValue:
 			floatVal, err := strconv.ParseFloat(v.GetStrValue(), 64)
 			if err != nil {
+				if exposeAsLabelValue(cfg, field) {
+					tags["value"] = v.GetStrValue()
+					fieldValue = 1
+					break
+				}
 				continue
 			}
 			fieldValue = floatVal
@@ -173,6 +178,15 @@ func addPrometheus(ocData *na_pb.OpenConfigData, jctx *JCtx) {
 		metric.mapKey = getMapKey(metric)
 		exporter.ch <- metric
 	}
+}
+
+func exposeAsLabelValue(cfg Config, field string) bool {
+	for _, sensor := range cfg.Prometheus.SensorStringAsLabel {
+		if strings.HasPrefix(field, sensor) {
+			return true
+		}
+	}
+	return false
 }
 
 func promInit() *jtimonPExporter {
